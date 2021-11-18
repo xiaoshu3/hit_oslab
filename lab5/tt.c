@@ -13,13 +13,11 @@ _syscall1(int,sem_unlink,const char *,name);
 int main(){
     int d,b;
     
-	sleep(50);
-    while(1){
     d =sem_open("hello",2);
     b = sem_open("hello",3);
     printf("b: %d\n",b);
     printf("d: %d\n",d);
-    }
+
     return 0;
 
 }

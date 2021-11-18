@@ -19,3 +19,11 @@
 - struct tss_struct *tss = &(init_task.task.tss); 我把这句放到了sched.c 中
 - system_call.s 中需要修改 因为在task_struct 中添加 kernelstack 带来的影响。注意到system_call.s 中 这句注释
 /# these are offsets into the task-struct. 所以kernelstack 之后的偏移量 + 4 即可。
+
+
+## lab5 信号量的实现与应用
+- 实现的地方有两处自己解决不了的BUG，想了半天，也没弄明白为啥会有这样的BUG...也不知道怎么在linux0.11下调试文件。
+- 第一处在于sem_open() 函数，具体可以看tt.c文件的执行结果
+- 第二处就是pp.c文件，打印data的值，我看我文件里确实写入正确，而写入data的值为0。想了半天也没想明白...
+- 还有的地方就是pc.c文件中 注意是BUFSIZE，stdio.h 里还定义了个BUFSIZ，``#deffine BUFSIZ 8096``
+一开始vscode里就跳出这个，这里看了几遍才发现过来...
