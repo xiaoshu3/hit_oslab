@@ -70,22 +70,31 @@ int sys_sem_open(const char*name,unsigned int value){
 		tmp[i] = c;
 		if(c =='\0') break;
 	}
-    /*printk("sem_open\n");*/
+    
+    /*
+    printk("sem_open\n");
+    printk("tmp: %s\n",tmp);
+    printk("0:%s\n",semaphores[0].name);
+    printk("1:%s\n",semaphores[1].name);
+    */
+
     for(i=0;i<SEM_COUNT;i++){
         if(semaphores[i].occupied == 1 ){
             if(strcmp(semaphores[i].name,tmp) == 0){
-                printk("Find it\n");
+                /*printk("Find it\n");
+                printk("return %d\n",i);
+                */
                 return i;
             }
         }
     }
     for(i = 0;i<SEM_COUNT;i++){
         if(semaphores[i].occupied == 0){
-            strcmp(semaphores[i].name,tmp);
+            strcpy(semaphores[i].name,tmp);
             semaphores[i].occupied =1;
             semaphores[i].value =value;
             init_queue(&(semaphores[i].wait_queue));
-            printk("Creat it\n");
+            /*printk("Creat it\n");*/
             return i;
         }
     }
@@ -95,21 +104,30 @@ int sys_sem_open(const char*name,unsigned int value){
 }
 
 int sys_sem_wait(int sem){
-    /*printk("sem_wait\n");*/
+    
+    /*printk("%d: sem_wait\n",sem);*/
     cli();
-    --semaphores[sem].value;
-    if(semaphores[sem].value <0){
+    /*printk("%d:value: %d\n",sem,semaphores[sem].value);*/
+    semaphores[sem].value--;
+
+    /*printk("%d:value: %d\n",sem,semaphores[sem].value);*/
+
+    if((semaphores[sem].value) <0){
         insert_queue(current,&(semaphores[sem].wait_queue));
         current->state = TASK_UNINTERRUPTIBLE;
 	    schedule();
     }
+
+    
     sti();
+
+    /*printk("%d: out sem_wait\n",sem);*/
     return 0;
 }
 
 int sys_sem_post(int sem){
     /*printk("sem_post\n");*/
-
+    /*printk("%d: sem_post\n",sem);*/
     cli();
     ++semaphores[sem].value;
     if(semaphores[sem].value <= 0){
